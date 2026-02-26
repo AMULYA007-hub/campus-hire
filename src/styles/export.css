@@ -1,0 +1,114 @@
+/* Export Data Styles */
+.export-section {
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+
+.export-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.export-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.btn-export.csv {
+  background: #10b981;
+  color: white;
+}
+
+.btn-export.csv:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-export.pdf {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-export.pdf:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-export:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.export-info {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Download Progress */
+.download-progress {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--bg-primary);
+  border-radius: 6px;
+  border-left: 4px solid var(--primary);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--bg-secondary);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 2px;
+  animation: progress 1s ease-in-out;
+}
+
+@keyframes progress {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .export-buttons {
+    flex-direction: column;
+  }
+
+  .btn-export {
+    width: 100%;
+    justify-content: center;
+  }
+}

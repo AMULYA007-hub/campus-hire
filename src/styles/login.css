@@ -1,0 +1,257 @@
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+.floating-shape {
+  position: absolute;
+  opacity: 0.1;
+}
+
+.shape-1 {
+  width: 300px;
+  height: 300px;
+  background: white;
+  border-radius: 50%;
+  top: -50px;
+  left: -50px;
+  animation: float 6s ease-in-out infinite;
+}
+
+.shape-2 {
+  width: 200px;
+  height: 200px;
+  background: white;
+  border-radius: 50%;
+  bottom: 50px;
+  right: -50px;
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+.shape-3 {
+  width: 150px;
+  height: 150px;
+  background: white;
+  border-radius: 50%;
+  top: 50%;
+  left: 10%;
+  animation: float 10s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(30px);
+  }
+}
+
+.login-wrapper {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 500px;
+  z-index: 10;
+  position: relative;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-logo {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.login-header h1 {
+  font-size: 2rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.login-header p {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.role-selector label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+}
+
+.role-card {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.role-card:hover {
+  border-color: var(--primary);
+  background: rgba(37, 99, 235, 0.05);
+  transform: translateY(-2px);
+}
+
+.role-card.active {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.role-icon {
+  font-size: 2rem;
+}
+
+.role-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  padding-right: 2.5rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: var(--primary);
+}
+
+.demo-info {
+  margin: 0;
+  color: var(--warning);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.btn-login {
+  padding: 0.875rem !important;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.login-footer {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1.5rem;
+}
+
+.login-footer p {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+}
+
+.login-footer .text-secondary {
+  color: var(--text-secondary);
+}
+
+@media (max-width: 500px) {
+  .login-wrapper {
+    padding: 2rem 1.5rem;
+  }
+
+  .login-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .login-logo {
+    font-size: 2.5rem;
+  }
+
+  .role-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
