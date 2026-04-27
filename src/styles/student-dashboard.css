@@ -338,6 +338,18 @@
   font-size: 0.875rem;
 }
 
+.app-details p {
+  margin: 0.25rem 0;
+}
+
+.app-details a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.app-details p strong {
+  font-weight: 600;
+}
 .app-status {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;

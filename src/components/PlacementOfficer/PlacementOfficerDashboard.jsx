@@ -4,10 +4,33 @@ import { useData } from '../../hooks/useData';
 import PlacementOfficerOTP from './PlacementOfficerOTP';
 import '../../styles/officer-dashboard.css';
 
-function PlacementOfficerDashboardContent({ user }) {
+function PlacementOfficerDashboardContent({ user, view = 'overview' }) {
   const { placements, applications, users, jobs, addPlacement } = useData();
   const [activeTab, setActiveTab] = useState('overview');
   const [showAddPlacement, setShowAddPlacement] = useState(false);
+
+  // update internal tab when parent view changes
+  React.useEffect(() => {
+    switch (view) {
+      case 'overview':
+      case 'tracking':
+      case 'analytics':
+        setActiveTab('overview');
+        break;
+      case 'placements':
+        setActiveTab('placements');
+        break;
+      case 'reports':
+        setActiveTab('reports');
+        break;
+      case 'interactions':
+        // interactions not implemented yet; could show placeholder below
+        setActiveTab('overview');
+        break;
+      default:
+        break;
+    }
+  }, [view]);
   const [formData, setFormData] = useState({
     studentName: '',
     companyName: '',
@@ -57,6 +80,16 @@ function PlacementOfficerDashboardContent({ user }) {
     element.click();
     document.body.removeChild(element);
   };
+
+  // show placeholder for interactions view
+  if (view === 'interactions') {
+    return (
+      <div className="officer-dashboard">
+        <h2>Interactions</h2>
+        <p>This section will display user/placement officer conversations or notes soon.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="officer-dashboard">
@@ -461,7 +494,7 @@ function PlacementOfficerDashboardContent({ user }) {
   );
 }
 
-export default function PlacementOfficerDashboard({ user }) {
+export default function PlacementOfficerDashboard({ user, view = 'overview' }) {
   const [otpVerified, setOtpVerified] = useState(false);
 
   // Restrict access to only placement officers
@@ -494,5 +527,5 @@ export default function PlacementOfficerDashboard({ user }) {
     );
   }
 
-  return <PlacementOfficerDashboardContent user={user} />;
+  return <PlacementOfficerDashboardContent user={user} view={view} />;
 }

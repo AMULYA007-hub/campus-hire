@@ -36,6 +36,7 @@
   overflow: hidden;
   border: 4px solid var(--primary);
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .profile-avatar img {
@@ -50,6 +51,7 @@
   bottom: 0;
   right: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 40px;
@@ -58,11 +60,41 @@
   color: white;
   border-radius: 50%;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s, transform 0.3s;
+  font-size: 10px;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.avatar-upload:hover {
+.avatar-upload:hover:not(:disabled) {
   background: var(--secondary);
+  transform: scale(1.1);
+}
+
+.avatar-upload:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.avatar-upload .upload-text {
+  font-size: 9px;
+  font-weight: bold;
+  margin-top: 1px;
+}
+
+.avatar-upload .upload-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .profile-info {

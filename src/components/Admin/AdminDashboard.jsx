@@ -3,10 +3,30 @@ import { Shield, Plus, Trash2, Users, Briefcase, TrendingUp, BarChart3, Edit } f
 import { useData } from '../../hooks/useData';
 import '../../styles/admin-dashboard.css';
 
-export default function AdminDashboard({ user }) {
+export default function AdminDashboard({ user, view = 'users' }) {
   const { users, jobs, applications, placements, addUser, deleteUser, addJob } = useData();
   const [activeTab, setActiveTab] = useState('users');
   const [showAddUser, setShowAddUser] = useState(false);
+
+  // respond to parent's view selection
+  React.useEffect(() => {
+    switch (view) {
+      case 'users':
+      case 'roles':
+        setActiveTab('users');
+        break;
+      case 'analytics':
+      case 'placements':
+      case 'applications':
+        setActiveTab('analytics');
+        break;
+      case 'settings':
+        setActiveTab('settings');
+        break;
+      default:
+        break;
+    }
+  }, [view]);
   const [formData, setFormData] = useState({
     name: '',
     email: '',

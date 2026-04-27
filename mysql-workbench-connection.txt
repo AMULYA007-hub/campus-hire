@@ -1,0 +1,22 @@
+-- MySQL Workbench Connection Setup
+-- Use these settings to connect to your local MySQL server
+
+Connection Name: CampusHire Local
+Hostname: localhost
+Port: 3306
+Username: root
+Password: Amulya@123!
+Default Schema: campus_hire
+
+-- Steps in MySQL Workbench:
+1. Open MySQL Workbench
+2. Click the "+" icon next to "MySQL Connections"
+3. Enter the details above
+4. Click "Test Connection" to verify
+5. Click "OK" to save
+6. Double-click the connection to open it
+7. Run the schema.sql file to create tables
+
+-- Alternative: Run schema.sql directly
+-- File > Open SQL Script > Select mysql-workbench-schema.sql
+-- Click the lightning bolt to execute

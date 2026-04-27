@@ -23,4 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 backend/
-spring-backend/
+spring-backend/target/
+spring-backend/.mvn/wrapper/maven-wrapper.jar
+spring-backend/.mvn/wrapper/maven-wrapper.properties
+spring-backend/mvnw
+spring-backend/mvnw.cmd

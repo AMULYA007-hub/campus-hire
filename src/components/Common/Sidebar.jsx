@@ -1,58 +1,52 @@
-import React, { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
-import '../../styles/sidebar.css';
+// src/components/Common/Sidebar.jsx
+import React from 'react';
+import { LayoutDashboard, User, Briefcase, FileText, Users } from 'lucide-react';
 
-export default function Sidebar({ items, isOpen, onItemClick }) {
-  const [expandedItems, setExpandedItems] = useState({});
+export default function Sidebar({ user, activeView, onViewChange }) {
+  
+  // 1. Define the menu items based on the user's role
+  const getMenuItems = () => {
+    const role = user?.role?.toLowerCase();
+    
+    if (role === 'student') {
+      return [
+        { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20}/> },
+        { id: 'profile', label: 'My Profile', icon: <User size={20}/> },
+        { id: 'jobs', label: 'Browse Jobs', icon: <Briefcase size={20}/> },
+        { id: 'applications', label: 'My Applications', icon: <FileText size={20}/> },
+      ];
+    }
+    
+    if (role === 'employer') {
+      return [
+        { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20}/> },
+        { id: 'post-job', label: 'Post a Job', icon: <Briefcase size={20}/> },
+        { id: 'applicants', label: 'View Applicants', icon: <Users size={20}/> },
+      ];
+    }
 
-  const toggleExpand = (id) => {
-    setExpandedItems(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
+    return []; // Return empty if no role matches
   };
 
-  return (
-    <div className={`sidebar ${isOpen ? 'open' : ''}`}>
-      <div className="sidebar-content">
-        {items.map(item => (
-          <div key={item.id} className="sidebar-item-wrapper">
-            <button
-              className={`sidebar-item ${item.active ? 'active' : ''}`}
-              onClick={() => {
-                if (item.submenu) {
-                  toggleExpand(item.id);
-                } else {
-                  onItemClick(item);
-                }
-              }}
-            >
-              <span className="sidebar-icon">{item.icon}</span>
-              <span className="sidebar-label">{item.label}</span>
-              {item.submenu && (
-                <ChevronDown 
-                  size={16} 
-                  className={`sidebar-chevron ${expandedItems[item.id] ? 'expanded' : ''}`}
-                />
-              )}
-            </button>
+  const menuItems = getMenuItems();
 
-            {item.submenu && expandedItems[item.id] && (
-              <div className="sidebar-submenu">
-                {item.submenu.map(subitem => (
-                  <button
-                    key={subitem.id}
-                    className="sidebar-subitem"
-                    onClick={() => onItemClick(subitem)}
-                  >
-                    {subitem.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+  // 2. Return a single JSX block
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-content">
+        {menuItems.map((item) => (
+          <button
+            key={item.id}
+            // Use 'activeView' from props to determine the active class
+            className={`sidebar-item ${activeView === item.id ? 'active' : ''}`}
+            // Use 'onViewChange' from props to change the view in App.jsx
+            onClick={() => onViewChange(item.id)}
+          >
+            <span className="sidebar-icon">{item.icon}</span>
+            <span className="sidebar-label">{item.label}</span>
+          </button>
         ))}
       </div>
-    </div>
+    </aside>
   );
 }

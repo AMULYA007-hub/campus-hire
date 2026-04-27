@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { Edit2, Save, X, Camera, Award, BookOpen, Briefcase } from 'lucide-react';
+import { Edit2, Save, X, Camera, Award, BookOpen, Briefcase, Upload } from 'lucide-react';
+import { apiService } from '../../utils/apiService';
+import { logger } from '../../utils/logger';
 import '../../styles/profile.css';
 
 export default function StudentProfile({ user, onUpdate }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarFile, setAvatarFile] = useState(null);
   const [profile, setProfile] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -24,6 +28,68 @@ export default function StudentProfile({ user, onUpdate }) {
     setProfile(prev => ({ ...prev, [name]: value }));
   };
 
+  // Handle avatar file selection and upload
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      logger.warn('Invalid file type for avatar upload', { type: file.type }, 'StudentProfile');
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      logger.warn('Avatar file too large', { size: file.size }, 'StudentProfile');
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    setAvatarFile(file);
+    await uploadAvatar(file);
+  };
+
+  // Upload avatar to server
+  const uploadAvatar = async (file) => {
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      formData.append('userId', user?.id);
+
+      // Create FormData-compatible request
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload avatar');
+      }
+
+      const data = await response.json();
+      logger.info('Avatar uploaded successfully', { fileName: file.name }, 'StudentProfile');
+
+      // Update user profile with new avatar URL
+      onUpdate({
+        ...user,
+        avatar: data.avatarUrl
+      });
+
+      alert('Profile photo updated successfully!');
+    } catch (error) {
+      logger.error('Avatar upload failed', error, 'StudentProfile');
+      alert('Failed to upload profile photo. Please try again.');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const handleSave = () => {
     onUpdate({
       ...user,
@@ -41,9 +107,22 @@ export default function StudentProfile({ user, onUpdate }) {
         <div className="profile-card">
           <div className="profile-avatar">
             <img src={user?.avatar} alt={user?.name} />
-            <label className="avatar-upload">
-              <Camera size={20} />
-              <input type="file" accept="image/*" hidden />
+            <label className="avatar-upload" title="Click to upload profile photo">
+              {uploadingAvatar ? (
+                <div className="upload-spinner"></div>
+              ) : (
+                <>
+                  <Camera size={20} />
+                  <span className="upload-text">Upload</span>
+                </>
+              )}
+              <input 
+                type="file" 
+                accept="image/*" 
+                hidden 
+                onChange={handleAvatarChange}
+                disabled={uploadingAvatar}
+              />
             </label>
           </div>
           <div className="profile-info">
