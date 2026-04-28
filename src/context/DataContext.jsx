@@ -195,27 +195,31 @@ export const DataProvider = ({ children }) => {
       } catch (error) {
         logger.error('Failed to add job via API, falling back to local', error, 'DataContext');
         // Fallback to local operation
-        const newJob = {
-          id: Math.max(...jobs.map((j) => j.id), 0) + 1,
-          ...jobData,
-          posted: new Date().toISOString().split('T')[0],
-          applicants: 0,
-          status: 'active',
-          logo: 'https://via.placeholder.com/100/2563eb/ffffff?text=' + jobData.company.substring(0, 3).toUpperCase(),
-        };
-        setJobs([newJob, ...jobs]);
-        cacheManager.delete('all_jobs');
-        logger.info('Job added locally (fallback)', { jobId: newJob.id }, 'DataContext');
-        return newJob;
+        return new Promise((resolve) => {
+          setJobs(prev => {
+            const newJob = {
+              id: Math.max(...prev.map((j) => j.id), 0) + 1,
+              ...jobData,
+              posted: new Date().toISOString().split('T')[0],
+              applicants: 0,
+              status: 'active',
+              logo: 'https://via.placeholder.com/100/2563eb/ffffff?text=' + jobData.company.substring(0, 3).toUpperCase(),
+            };
+            cacheManager.delete('all_jobs');
+            logger.info('Job added locally (fallback)', { jobId: newJob.id }, 'DataContext');
+            resolve(newJob);
+            return [newJob, ...prev];
+          });
+        });
       }
     },
-    [jobs]
+    []
   );
 
   const updateJob = useCallback(
     (id, jobData) => {
       try {
-        setJobs(jobs.map((job) => (job.id === id ? { ...job, ...jobData } : job)));
+        setJobs(prev => prev.map((job) => (job.id === id ? { ...job, ...jobData } : job)));
         cacheManager.delete('all_jobs'); // Invalidate cache
         logger.info('Job updated successfully', { jobId: id }, 'DataContext');
       } catch (error) {
@@ -223,25 +227,25 @@ export const DataProvider = ({ children }) => {
         throw error;
       }
     },
-    [jobs]
+    []
   );
 
   const deleteJob = useCallback(
     async (id) => {
       try {
         await apiService.delete(`/jobs/${id}`);
-        setJobs(jobs.filter((job) => job.id !== id));
+        setJobs(prev => prev.filter((job) => job.id !== id));
         cacheManager.delete('all_jobs'); // Invalidate cache
         logger.info('Job deleted successfully', { jobId: id }, 'DataContext');
       } catch (error) {
         logger.error('Failed to delete job via API, falling back to local', error, 'DataContext');
         // Fallback to local operation
-        setJobs(jobs.filter((job) => job.id !== id));
+        setJobs(prev => prev.filter((job) => job.id !== id));
         cacheManager.delete('all_jobs');
         logger.info('Job deleted locally (fallback)', { jobId: id }, 'DataContext');
       }
     },
-    [jobs]
+    []
   );
 
   const applyJob = useCallback(
@@ -267,16 +271,19 @@ export const DataProvider = ({ children }) => {
         return new Promise((resolve, reject) => {
           try {
             setTimeout(() => {
-              const newApplication = {
-                id: Math.max(...applications.map((a) => a.id), 0) + 1,
-                studentId: studentData.id,
-                jobId,
-                status: 'applied',
-                date: new Date().toISOString().split('T')[0],
-                resume: studentData.resume,
-                coverLetter: studentData.coverLetter || '',
-              };
-              setApplications((prev) => [newApplication, ...prev]);
+              let newApplication;
+              setApplications((prev) => {
+                newApplication = {
+                  id: Math.max(...prev.map((a) => a.id), 0) + 1,
+                  studentId: studentData.id,
+                  jobId,
+                  status: 'applied',
+                  date: new Date().toISOString().split('T')[0],
+                  resume: studentData.resume,
+                  coverLetter: studentData.coverLetter || '',
+                };
+                return [newApplication, ...prev];
+              });
               setJobs((prev) =>
                 prev.map((job) => (job.id === jobId ? { ...job, applicants: job.applicants + 1 } : job))
               );
@@ -291,25 +298,25 @@ export const DataProvider = ({ children }) => {
         });
       }
     },
-    [applications, jobs]
+    []
   );
 
   const updateApplicationStatus = useCallback(
     async (id, status) => {
       try {
         await apiService.put(`/applications/${id}/status`, { status });
-        setApplications(applications.map((app) => (app.id === id ? { ...app, status } : app)));
+        setApplications(prev => prev.map((app) => (app.id === id ? { ...app, status } : app)));
         cacheManager.delete('all_applications'); // Invalidate cache
         logger.info('Application status updated', { applicationId: id, status }, 'DataContext');
       } catch (error) {
         logger.error('Failed to update application status via API, falling back to local', error, 'DataContext');
         // Fallback to local operation
-        setApplications(applications.map((app) => (app.id === id ? { ...app, status } : app)));
+        setApplications(prev => prev.map((app) => (app.id === id ? { ...app, status } : app)));
         cacheManager.delete('all_applications');
         logger.info('Application status updated locally (fallback)', { applicationId: id, status }, 'DataContext');
       }
     },
-    [applications]
+    []
   );
 
   const addPlacement = useCallback(
@@ -327,15 +334,18 @@ export const DataProvider = ({ children }) => {
         return new Promise((resolve, reject) => {
           try {
             setTimeout(() => {
-              const newPlacement = {
-                id: Math.max(...(placements.length > 0 ? placements.map((p) => p.id) : [0]), 0) + 1,
-                ...placementData,
-                date: new Date().toISOString().split('T')[0],
-              };
-              setPlacements((prev) => [newPlacement, ...prev]);
-              cacheManager.delete('all_placements');
-              logger.info('Placement added locally (fallback)', { placementId: newPlacement.id }, 'DataContext');
-              resolve(newPlacement);
+              let newPlacement;
+              setPlacements((prev) => {
+                newPlacement = {
+                  id: Math.max(...(prev.length > 0 ? prev.map((p) => p.id) : [0]), 0) + 1,
+                  ...placementData,
+                  date: new Date().toISOString().split('T')[0],
+                };
+                cacheManager.delete('all_placements');
+                logger.info('Placement added locally (fallback)', { placementId: newPlacement.id }, 'DataContext');
+                resolve(newPlacement);
+                return [newPlacement, ...prev];
+              });
             }, 300);
           } catch (error) {
             logger.error('Failed to add placement locally', error, 'DataContext');
@@ -344,42 +354,45 @@ export const DataProvider = ({ children }) => {
         });
       }
     },
-    [placements]
+    []
   );
 
   const addUser = useCallback(
     (userData) => {
       try {
-        const newUser = {
-          id: Math.max(...users.map((u) => u.id), 0) + 1,
-          ...userData,
-          status: 'active',
-          joinDate: new Date().toISOString().split('T')[0],
-        };
-        const updated = [newUser, ...users];
-        setUsers(updated);
-        localStorage.setItem('registeredUsers', JSON.stringify(updated));
-        logger.info('User added successfully', { userId: newUser.id }, 'DataContext');
+        let newUser;
+        setUsers((prev) => {
+          newUser = {
+            id: Math.max(...prev.map((u) => u.id), 0) + 1,
+            ...userData,
+            status: 'active',
+            joinDate: new Date().toISOString().split('T')[0],
+          };
+          const updated = [newUser, ...prev];
+          localStorage.setItem('registeredUsers', JSON.stringify(updated));
+          logger.info('User added successfully', { userId: newUser.id }, 'DataContext');
+          return updated;
+        });
         return newUser;
       } catch (error) {
         logger.error('Failed to add user', error, 'DataContext');
         throw error;
       }
     },
-    [users]
+    []
   );
 
   const deleteUser = useCallback(
     (id) => {
       try {
-        setUsers(users.filter((user) => user.id !== id));
+        setUsers(prev => prev.filter((user) => user.id !== id));
         logger.info('User deleted successfully', { userId: id }, 'DataContext');
       } catch (error) {
         logger.error('Failed to delete user', error, 'DataContext');
         throw error;
       }
     },
-    [users]
+    []
   );
 
   const value = {
